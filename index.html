@@ -139,7 +139,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:1
 .panel-body{padding:14px 22px 20px;}
 
 /* ── Qlik embed sizing ── */
-qlik-embed{display:block;border-radius:var(--r-sm);overflow:hidden;}
+qlik-embed{display:block;border-radius:var(--r-sm);overflow:hidden;width:100%;position:relative;}
+qlik-embed[ui="analytics/chart"]{min-height:280px;}
+qlik-embed[ui="analytics/selections"]{min-height:52px;}
 
 /* ── Insight callout ── */
 .insight{margin-top:14px;padding:12px 16px;background:var(--surf2);border-radius:var(--r-sm);border-left:3px solid var(--coral);display:flex;gap:12px;align-items:flex-start;}
