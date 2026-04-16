@@ -11,20 +11,17 @@
      STEP: Replace 019d948c631cf64715196a2a9127433c with the
      Client ID from Qlik Administration → OAuth
      after you create the OAuth2 SPA client.
-     Also replace LoyAnalytics below.
+     Also replace YOUR_GITHUB_USERNAME below.
 ════════════════════════════════════════════ -->
-<script type="module">
-  import { defineConfig } from
-    "https://cdn.jsdelivr.net/npm/@qlik/embed-web-components@1/dist/esm/index.js";
-  defineConfig({
-    host:        "loylogic-onanalytics.eu.qlikcloud.com",
-    authType:    "Oauth2",
-    clientId:    "019d948c631cf64715196a2a9127433c",
-    redirectUri: "https://LoyAnalytics.github.io/loylogic-dashboard/callback.html",
-  });
-</script>
-<script type="module"
-  src="https://cdn.jsdelivr.net/npm/@qlik/embed-web-components@1/dist/esm/qlik-embed.js">
+<script
+  crossorigin="anonymous"
+  type="application/javascript"
+  src="https://cdn.jsdelivr.net/npm/@qlik/embed-web-components@1/dist/index.min.js"
+  data-host="https://loylogic-onanalytics.eu.qlikcloud.com"
+  data-client-id="019d948c631cf64715196a2a9127433c"
+  data-redirect-uri="https://loyanalytics.github.io/loylogic-dashboard/callback.html"
+  data-access-token-storage="session"
+  data-auth-type="Oauth2">
 </script>
 
 <style>
