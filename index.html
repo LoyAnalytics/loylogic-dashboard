@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Loylogic · Member Intelligence Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+<!-- ═══════════════════════════════════════════
+     QLIK EMBED — OAuth2
+     STEP: Replace YOUR_CLIENT_ID_HERE with the
+     Client ID from Qlik Administration → OAuth
+     after you create the OAuth2 SPA client.
+     Also replace YOUR_GITHUB_USERNAME below.
+════════════════════════════════════════════ -->
+<script type="module">
+  import { defineConfig } from
+    "https://cdn.jsdelivr.net/npm/@qlik/embed-web-components@1/dist/esm/index.js";
+  defineConfig({
+    host:        "loylogic-onanalytics.eu.qlikcloud.com",
+    authType:    "Oauth2",
+    clientId:    "YOUR_CLIENT_ID_HERE",
+    redirectUri: "https://YOUR_GITHUB_USERNAME.github.io/loylogic-dashboard/callback.html",
+  });
+</script>
+<script type="module"
+  src="https://cdn.jsdelivr.net/npm/@qlik/embed-web-components@1/dist/esm/qlik-embed.js">
+</script>
+
+<style>
+:root {
+  --navy:      #1C2340;
+  --navy-mid:  #2c3560;
+  --coral:     #FF5A3C;
+  --coral-s:   #FF7A62;
+  --coral-p:   #FFF0ED;
+  --ink:       #1a1e2e;
+  --ink-mid:   #4a5068;
+  --ink-soft:  #8892a4;
+  --bg:        #F2F4F8;
+  --surface:   #FFFFFF;
+  --surf2:     #F8F9FB;
+  --border:    #E4E7EF;
+  --border-s:  #EEF0F5;
+  --gold:      #E8A020;
+  --green:     #1EB87A;
+  --teal:      #0B8A8A;
+  --purple:    #8B3A8F;
+  --font-d:    'Playfair Display', Georgia, serif;
+  --font-b:    'Plus Jakarta Sans', sans-serif;
+  --r:         14px;
+  --r-sm:      8px;
+  --sh-sm:     0 1px 4px rgba(28,35,64,.06),0 2px 12px rgba(28,35,64,.04);
+  --sh-md:     0 4px 20px rgba(28,35,64,.09),0 1px 4px rgba(28,35,64,.05);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:13.5px;min-height:100vh;}
+.shell{display:grid;grid-template-columns:230px 1fr;grid-template-rows:auto 1fr;min-height:100vh;}
+
+/* ── Sidebar ── */
+.sidebar{grid-row:1/-1;background:var(--navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;}
+.sidebar::after{content:'';position:absolute;bottom:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,90,60,.07);pointer-events:none;}
+.logo-wrap{padding:26px 22px 22px;border-bottom:1px solid rgba(255,255,255,.08);}
+.logo-row{display:flex;align-items:center;gap:10px;}
+.logo-box{width:36px;height:36px;border-radius:9px;background:var(--coral);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(255,90,60,.45);}
+.logo-box svg{width:18px;height:18px;fill:#fff;}
+.logo-name{font-family:var(--font-d);font-size:16px;font-weight:700;color:#fff;}
+.logo-tag{margin-top:8px;font-size:9.5px;color:rgba(255,255,255,.32);letter-spacing:1.2px;text-transform:uppercase;font-weight:500;}
+.nav{flex:1;padding:18px 12px;display:flex;flex-direction:column;gap:1px;overflow-y:auto;}
+.nav-sec{font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:16px 10px 6px;font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r-sm);color:rgba(255,255,255,.48);font-size:12.5px;cursor:pointer;transition:all .17s;text-decoration:none;position:relative;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);}
+.nav-item.active{background:rgba(255,90,60,.15);color:#fff;}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.18);flex-shrink:0;transition:all .17s;}
+.nav-item.active .nav-dot{background:var(--coral);box-shadow:0 0 7px rgba(255,90,60,.6);}
+.nav-badge{font-size:9.5px;background:var(--coral);color:#fff;padding:1px 6px;border-radius:20px;font-weight:700;margin-left:auto;}
+.sidebar-btm{padding:16px 22px;border-top:1px solid rgba(255,255,255,.08);}
+.live-row{display:flex;align-items:center;gap:7px;font-size:10.5px;color:rgba(255,255,255,.32);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 7px rgba(30,184,122,.7);animation:lp 2.5s infinite;}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── Topbar ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;box-shadow:var(--sh-sm);}
+.pg-eye{font-size:10px;color:var(--ink-soft);letter-spacing:.6px;text-transform:uppercase;font-weight:600;margin-bottom:2px;}
+.pg-title{font-family:var(--font-d);font-size:18px;font-weight:700;letter-spacing:-.3px;color:var(--ink);}
+.tbar-r{display:flex;align-items:center;gap:9px;}
+.period-grp{display:flex;background:var(--surf2);border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.p-btn{padding:5px 12px;font-size:11.5px;font-weight:500;color:var(--ink-soft);cursor:pointer;transition:all .15s;border:none;background:transparent;font-family:var(--font-b);}
+.p-btn.active{background:var(--navy);color:#fff;}
+.tbar-chip{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:var(--surface);font-size:11.5px;color:var(--ink-mid);cursor:pointer;transition:all .15s;font-weight:500;}
+.tbar-chip:hover{border-color:var(--coral);color:var(--coral);}
+.exp-btn{padding:7px 16px;border-radius:7px;background:var(--coral);color:#fff;font-size:11.5px;font-weight:700;border:none;cursor:pointer;font-family:var(--font-b);box-shadow:0 4px 14px rgba(255,90,60,.3);transition:all .17s;display:flex;align-items:center;gap:5px;}
+.exp-btn:hover{background:var(--coral-s);transform:translateY(-1px);}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:#fff;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--border);cursor:pointer;}
+
+/* ── Main ── */
+.main{padding:26px 32px;display:flex;flex-direction:column;gap:18px;}
+
+/* ── Tab nav ── */
+.tab-row{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:4px;width:fit-content;box-shadow:var(--sh-sm);}
+.tab{padding:7px 18px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .17s;color:var(--ink-soft);}
+.tab.active{background:var(--navy);color:#fff;box-shadow:0 2px 8px rgba(28,35,64,.25);}
+.tab:hover:not(.active){background:var(--surf2);color:var(--ink);}
+
+/* ── Filter bar ── */
+.filter-bar{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r);box-shadow:var(--sh-sm);overflow:hidden;min-height:52px;}
+
+/* ── KPI cards ── */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r);padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--sh-sm);transition:box-shadow .2s,transform .2s;cursor:default;position:relative;overflow:hidden;}
+.kpi-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px);}
+.kpi-card::before{content:'';position:absolute;left:0;top:18%;bottom:18%;width:3px;border-radius:0 3px 3px 0;opacity:0;transition:opacity .2s;}
+.kpi-card:hover::before{opacity:1;}
+.kpi-card.c1::before{background:var(--teal);}
+.kpi-card.c2::before{background:var(--coral);}
+.kpi-card.c3::before{background:var(--purple);}
+.kpi-card.c4::before{background:var(--gold);}
+.kpi-card.c5::before{background:var(--green);}
+.kpi-card.c6::before{background:var(--navy);}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;}
+.kpi-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.kpi-icon.teal  {background:rgba(11,138,138,.1);}
+.kpi-icon.coral {background:var(--coral-p);}
+.kpi-icon.purple{background:rgba(139,58,143,.1);}
+.kpi-icon.gold  {background:rgba(232,160,32,.1);}
+.kpi-icon.green {background:rgba(30,184,122,.1);}
+.kpi-icon.navy  {background:rgba(28,35,64,.08);}
+.kpi-trend{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:20px;display:flex;align-items:center;gap:3px;}
+.kpi-trend.up  {background:rgba(30,184,122,.1);color:var(--green);}
+.kpi-trend.dn  {background:rgba(255,90,60,.1); color:var(--coral);}
+.kpi-trend.neu {background:rgba(28,35,64,.07); color:var(--ink-mid);}
+.kpi-val{font-family:var(--font-d);font-size:24px;font-weight:700;letter-spacing:-.8px;color:var(--ink);line-height:1;}
+.kpi-val sup{font-size:13px;color:var(--ink-soft);font-family:var(--font-b);font-weight:400;}
+.kpi-lbl{font-size:11px;color:var(--ink-soft);font-weight:500;}
+.kpi-abbr{font-size:10px;color:var(--ink-soft);font-style:italic;}
+
+/* ── Panel ── */
+.panel{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r);box-shadow:var(--sh-sm);overflow:hidden;transition:box-shadow .2s;}
+.panel:hover{box-shadow:var(--sh-md);}
+.panel-head{padding:18px 22px 0;display:flex;align-items:flex-start;justify-content:space-between;}
+.p-title{font-family:var(--font-d);font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.2px;}
+.p-sub{font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
+.p-actions{display:flex;gap:5px;align-items:center;}
+.pill-tab{font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;cursor:pointer;border:1px solid var(--border);color:var(--ink-soft);transition:all .15s;background:transparent;}
+.pill-tab.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+.pill-tab:hover:not(.on){border-color:var(--navy);color:var(--navy);}
+.icon-btn{width:26px;height:26px;border-radius:var(--r-sm);background:var(--surf2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:var(--ink-soft);transition:all .15s;}
+.icon-btn:hover{border-color:var(--navy);color:var(--navy);}
+.panel-body{padding:14px 22px 20px;}
+
+/* ── Qlik embed sizing ── */
+qlik-embed{display:block;border-radius:var(--r-sm);overflow:hidden;}
+
+/* ── Insight callout ── */
+.insight{margin-top:14px;padding:12px 16px;background:var(--surf2);border-radius:var(--r-sm);border-left:3px solid var(--coral);display:flex;gap:12px;align-items:flex-start;}
+.insight-body{font-size:11.5px;color:var(--ink-mid);line-height:1.6;}
+.insight-title{font-size:11.5px;font-weight:600;color:var(--ink);margin-bottom:3px;}
+
+/* ── Grid layouts ── */
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* ── Fade up ── */
+.fu{opacity:0;transform:translateY(8px);animation:fu .38s ease forwards;}
+.fu:nth-child(1){animation-delay:.04s}.fu:nth-child(2){animation-delay:.08s}
+.fu:nth-child(3){animation-delay:.12s}.fu:nth-child(4){animation-delay:.16s}
+.fu:nth-child(5){animation-delay:.20s}.fu:nth-child(6){animation-delay:.24s}
+.fu:nth-child(7){animation-delay:.28s}.fu:nth-child(8){animation-delay:.32s}
+@keyframes fu{to{opacity:1;transform:none}}
+
+/* ── Tab panels ── */
+.tab-panel{display:none;flex-direction:column;gap:18px;}
+.tab-panel.show{display:flex;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+
+@media(max-width:1200px){.kpi-row{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr);}.row-2{grid-template-columns:1fr;}}
+@media(max-width:760px){.shell{grid-template-columns:1fr;}.sidebar{display:none;}.main{padding:16px;}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-row">
+      <div class="logo-box">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.8 6.2L22 9.2l-5 5 1.2 7-6.2-3.4L5.8 21.2l1.2-7-5-5 7.2-1z"/></svg>
+      </div>
+      <div class="logo-name">Loylogic</div>
+    </div>
+    <div class="logo-tag">Member Intelligence · Management View</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-sec">Analytics</div>
+    <a class="nav-item active" href="#"><div class="nav-dot"></div>Member Trends</a>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>Segment Analysis<span class="nav-badge">2</span></a>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>Brand Performance</a>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>Redemption Insights</a>
+    <div class="nav-sec">Dimensions</div>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>Redemption Segment</a>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>Activity Status</a>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>Member Tier</a>
+    <div class="nav-sec">Filters</div>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>Program · Year · Month</a>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>Brand · Merchant</a>
+    <a class="nav-item" href="#"><div class="nav-dot"></div>YTD / MTD Flags</a>
+  </nav>
+  <div class="sidebar-btm">
+    <div class="live-row"><div class="live-dot"></div>Qlik Cloud · Live</div>
+  </div>
+</aside>
+
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
+  <div>
+    <div class="pg-eye">Member Intelligence Dashboard</div>
+    <div class="pg-title">Programme Performance & Segment Analysis</div>
+  </div>
+  <div class="tbar-r">
+    <div class="period-grp">
+      <button class="p-btn">MTD</button>
+      <button class="p-btn active">YTD</button>
+      <button class="p-btn">Prior Year</button>
+    </div>
+    <div class="tbar-chip">📅 2025–2026</div>
+    <div class="tbar-chip">🎯 All Segments</div>
+    <button class="exp-btn">↓ Export</button>
+    <div class="avatar">MG</div>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- ── Selections / Filter Bar (live Qlik) ── -->
+  <div class="filter-bar fu">
+    <qlik-embed
+      ui="analytics/selections"
+      app-id="f2a5b6f3-bc16-4784-b02e-6fff1e712b6a"
+      style="width:100%;height:52px;display:block;">
+    </qlik-embed>
+  </div>
+
+  <!-- ── KPI Cards (static labels, values driven by Qlik below) ── -->
+  <div class="kpi-row">
+    <div class="kpi-card c1 fu">
+      <div class="kpi-top"><div class="kpi-icon teal">👥</div><div class="kpi-trend up">▲ YTD</div></div>
+      <div class="kpi-val">KPI1</div>
+      <div class="kpi-lbl">Members</div>
+      <div class="kpi-abbr">Total active members</div>
+    </div>
+    <div class="kpi-card c2 fu">
+      <div class="kpi-top"><div class="kpi-icon coral">🎯</div><div class="kpi-trend up">▲ YTD</div></div>
+      <div class="kpi-val">KPI2</div>
+      <div class="kpi-lbl">Redeemers</div>
+      <div class="kpi-abbr">Members who redeemed</div>
+    </div>
+    <div class="kpi-card c3 fu">
+      <div class="kpi-top"><div class="kpi-icon purple">💫</div><div class="kpi-trend neu">— YTD</div></div>
+      <div class="kpi-val">KPI3</div>
+      <div class="kpi-lbl">Avg. Pts / Member</div>
+      <div class="kpi-abbr">Points per active member</div>
+    </div>
+    <div class="kpi-card c4 fu">
+      <div class="kpi-top"><div class="kpi-icon gold">🛒</div><div class="kpi-trend up">▲ YTD</div></div>
+      <div class="kpi-val">KPI4</div>
+      <div class="kpi-lbl">Transactions</div>
+      <div class="kpi-abbr">Full redeemer segment</div>
+    </div>
+    <div class="kpi-card c5 fu">
+      <div class="kpi-top"><div class="kpi-icon green">📊</div><div class="kpi-trend up">▲ YTD</div></div>
+      <div class="kpi-val">KPI5</div>
+      <div class="kpi-lbl">Redemption Rate</div>
+      <div class="kpi-abbr">Redeemers / Members</div>
+    </div>
+    <div class="kpi-card c6 fu">
+      <div class="kpi-top"><div class="kpi-icon navy">💰</div><div class="kpi-trend up">▲ YTD</div></div>
+      <div class="kpi-val">KPI6</div>
+      <div class="kpi-lbl">Points Issued</div>
+      <div class="kpi-abbr">Full redeemer segment</div>
+    </div>
+  </div>
+
+  <!-- ── Sheet Tabs ── -->
+  <div class="tab-row fu">
+    <div class="tab active" onclick="switchTab('trend',this)">📈 Monthly Trend</div>
+    <div class="tab" onclick="switchTab('segment',this)">◈ Segment Analysis</div>
+    <div class="tab" onclick="switchTab('detail',this)">⊞ Detail Pivot</div>
+  </div>
+
+  <!-- ══ TAB 1: Monthly Trend ══ -->
+  <div class="tab-panel show" id="tab-trend">
+    <div class="panel fu">
+      <div class="panel-head">
+        <div>
+          <div class="p-title">KPI1, KPI2 &amp; KPI3 by Month</div>
+          <div class="p-sub">Members (bars) · Redeemers &amp; Avg Pts (lines) · Jan 2025 – present</div>
+        </div>
+        <div class="p-actions">
+          <div class="icon-btn" title="Expand">⛶</div>
+          <div class="icon-btn" title="More">⋯</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <qlik-embed
+          ui="analytics/chart"
+          app-id="f2a5b6f3-bc16-4784-b02e-6fff1e712b6a"
+          object-id="KhWTBxv"
+          theme="Sense Horizon"
+          style="height:300px;">
+        </qlik-embed>
+        <div class="insight">
+          <div style="font-size:16px;flex-shrink:0;">💡</div>
+          <div>
+            <div class="insight-title">Management Insight</div>
+            <div class="insight-body">Nov 2025 peak engagement — highest avg pts and redeemers in the cycle. Apr 2026 shows sharp drop; compare against YTD flag for accurate period view.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB 2: Segment Analysis ══ -->
+  <div class="tab-panel" id="tab-segment">
+    <div class="row-2 fu">
+
+      <!-- Butterfly: Redemption Segment -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="p-title">KPI1 &amp; KPI2 by Redemption Segment</div>
+            <div class="p-sub">Members vs Redeemers · YTD</div>
+          </div>
+          <div class="p-actions"><div class="icon-btn">⛶</div><div class="icon-btn">⋯</div></div>
+        </div>
+        <div class="panel-body">
+          <qlik-embed
+            ui="analytics/chart"
+            app-id="f2a5b6f3-bc16-4784-b02e-6fff1e712b6a"
+            object-id="gFaWYk"
+            theme="Sense Horizon"
+            style="height:280px;">
+          </qlik-embed>
+        </div>
+      </div>
+
+      <!-- Butterfly: Activity Status -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="p-title">KPI1 &amp; KPI2 by Activity Status</div>
+            <div class="p-sub">Inactive · Lapsing · At Risk · Active</div>
+          </div>
+          <div class="p-actions"><div class="icon-btn">⛶</div><div class="icon-btn">⋯</div></div>
+        </div>
+        <div class="panel-body">
+          <qlik-embed
+            ui="analytics/chart"
+            app-id="f2a5b6f3-bc16-4784-b02e-6fff1e712b6a"
+            object-id="kspynR"
+            theme="Sense Horizon"
+            style="height:280px;">
+          </qlik-embed>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB 3: Detail Pivot ══ -->
+  <div class="tab-panel" id="tab-detail">
+    <div class="panel fu">
+      <div class="panel-head">
+        <div>
+          <div class="p-title">KPI1, KPI2, KPI4, KPI5 &amp; KPI6 · Redemption Segment × Activity Status × Member Tier</div>
+          <div class="p-sub">Pivot table · click rows to drill through</div>
+        </div>
+        <div class="p-actions">
+          <div class="icon-btn">⛶</div>
+          <div class="icon-btn">⋯</div>
+        </div>
+      </div>
+      <div class="panel-body" style="padding:0;">
+        <qlik-embed
+          ui="analytics/chart"
+          app-id="f2a5b6f3-bc16-4784-b02e-6fff1e712b6a"
+          object-id="fzjqpr"
+          theme="Sense Horizon"
+          style="height:400px;">
+        </qlik-embed>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('show'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('show');
+  el.classList.add('active');
+}
+</script>
+
+</body>
+</html>
